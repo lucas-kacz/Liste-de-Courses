@@ -1,0 +1,40 @@
+body{
+    margin: 0;
+    padding: 0;
+    background-image: linear-gradient( 135deg, #6B73FF 10%, #000DFF 100%);
+    background-attachment: fixed;
+}
+
+.background{
+    display: table;
+    background-color: rgb(255, 255, 255, .1);
+    backdrop-filter: blur(500px);
+    border-radius: 10px;
+    max-width: 100%;
+    width: 500px;
+    height: 200px;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 10em;
+}
+
+.background .liste-de-courses{
+    display: table-cell;
+    text-align: center;
+    vertical-align: middle;
+    /* margin-top: auto;
+    margin-bottom: auto; */
+}
+
+.list-table{
+    padding: 20px;
+    margin-left: auto;
+    margin-right: auto;
+    table-layout: auto;
+    width: 300px;
+    border-collapse: collapse;
+}
+
+.list-table th, td{
+    border: 1px solid;
+}
