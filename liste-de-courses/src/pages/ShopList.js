@@ -1,5 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+import $ from "jquery";
 
 function ShopList(){
 
@@ -10,17 +11,26 @@ function ShopList(){
     const [quantity, setQuantity] = useState("");
 
 
+    useEffect(() => {
+        let storedList = window.localStorage.getItem('shopping_list');
+        // if (storedList.length > 0) setList(JSON.parse(storedList))
+        setList(JSON.parse(storedList));
+    }, []);
+
+    useEffect(() => {
+        setTimeout(() => {
+            window.localStorage.setItem('shopping_list', JSON.stringify(list));
+        }, 500)
+    }, [list])
+
     const onFormSubmit = (e) => {
         if (product !== "" && quantity !== ""){
             setList([...list, [product, quantity]])
         }
     }
-
     // const display = () => {
     //     console.log(list)
     // }
-
-    console.log(product)
 
     return(
         <div>
