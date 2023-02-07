@@ -1,7 +1,8 @@
 import './App.css';
 import {Routes, Route} from "react-router-dom";
 import LoginPage from './pages/LoginPage';
-import ShopList from './pages/ShopList';
+import ShopList from './pages/ShopListTest';
+import ShoppingList from './pages/ShopList';
 
 function App() {
   return (
@@ -9,6 +10,7 @@ function App() {
       <Routes>
         <Route path="/" element={<LoginPage/>}/>
         <Route path="/shoplist" element={<ShopList/>}/>
+        <Route path="/shoppinglist" element={<ShoppingList/>}/>
       </Routes>
     </>
   );

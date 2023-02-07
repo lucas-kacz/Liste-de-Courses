@@ -1,73 +1,88 @@
+import React from "react";
 import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
-import $ from "jquery";
+import { v4 as uuid } from 'uuid';
 
-function ShopList(){
+import { View } from "./Components/View";
 
-    // const [input, setInput] = useState('');
-
-    const [list, setList] = useState([])
-    const [product, setProduct] = useState("");
-    const [quantity, setQuantity] = useState("");
-
-
-    useEffect(() => {
-        let storedList = window.localStorage.getItem('shopping_list');
-        // if (storedList.length > 0) setList(JSON.parse(storedList))
-        setList(JSON.parse(storedList));
-    }, []);
-
-    useEffect(() => {
-        setTimeout(() => {
-            window.localStorage.setItem('shopping_list', JSON.stringify(list));
-        }, 500)
-    }, [list])
-
-    const onFormSubmit = (e) => {
-        if (product !== "" && quantity !== ""){
-            setList([...list, [product, quantity]])
-        }
+//getting objects in local storage
+const getDataFromLocalStorage=()=>{
+    const data = localStorage.getItem('shopping_list1');
+    if(data){
+        return JSON.parse(data);
     }
-    // const display = () => {
-    //     console.log(list)
-    // }
+    else{
+        return []
+    }
+}
 
-    return(
+function ShoppingList(){
+
+    //array of shopping list
+    const[shoppingList, setShoppingList] = useState(getDataFromLocalStorage());
+
+    //input fields
+    const [product, setProduct] = useState('');
+    const [quantity, setQuantity] = useState('');
+
+    //form submit event
+    const handleAddToShoppingList=(e)=>{
+        e.preventDefault();
+        //creating a shopping object
+        const uniqueId = uuid()        
+
+        let shopping={
+            id : uuid(),
+            product,
+            quantity,
+        }
+        setShoppingList([...shoppingList, shopping]);
+        console.log(uuid())
+    }
+
+    //local storage
+    useEffect(()=>{
+        localStorage.setItem('shopping_list1', JSON.stringify(shoppingList));
+    },[shoppingList])
+
+    return (
         <div>
-            Liste de courses
-            <div className="background">
-                <div className="liste-de-courses">
+            <h1>Shopping List App</h1>
 
-                    {/* <label>Nom Produit</label><br/> */}
-                    <input type="text" id="product" placeholder="Add a Product" value={product} required="required" onChange={(event) => setProduct(event.target.value)}></input><br/><br/>
+            <div className="main">
+                <div className="shopping-form">
+                    <form onSubmit={handleAddToShoppingList}>
+                        <label>Product</label>
+                        <input type="text" required onChange={(e)=>setProduct(e.target.value)} value={product}></input>
+                        <br/>
+                        <label>Quantity</label>
+                        <input type="number" required onChange={(e)=>setQuantity(e.target.value)} value={quantity}></input>
+                        <br/>
+                        <button type="submit">Add to Shopping List</button>
+                    </form>
+                </div>
 
-                    {/* <label>Quantité</label><br/> */}
-                    <input type="number" id="quantity" placeholder="Add Quantity" value={quantity} required="required" onChange={(event) => setQuantity(event.target.value)}></input><br/><br/>
-
-                    <button onClick={onFormSubmit}>Add</button><br/><br/>
-
-                    <table className="list-table">
-                        <thead>
-                            <tr>
-                                <th>Product</th>
-                                <th>Quantity</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {list.map((element, index) => (
-                                <tr>
-                                    <td>{element[0]}</td>
-                                    <td>{element[1]}</td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
-
+                <div className="table">
+                    {shoppingList.length > 0 &&
+                        <div>
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Id</th>
+                                        <th>Product</th>
+                                        <th>Quantity</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <View shoppingList={shoppingList}/>
+                                </tbody>
+                            </table>
+                        </div> 
+                    }
+                    {shoppingList.length < 1 && <div>No products in shopping list</div>}
                 </div>
             </div>
         </div>
-        
     )
 }
 
-export default ShopList;
+export default ShoppingList;
