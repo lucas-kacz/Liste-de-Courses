@@ -6,7 +6,7 @@ import { View } from "./Components/View";
 
 //getting objects in local storage
 const getDataFromLocalStorage=()=>{
-    const data = localStorage.getItem('shopping_list1');
+    const data = localStorage.getItem('shoppingListLocal');
     if(data){
         return JSON.parse(data);
     }
@@ -33,7 +33,7 @@ function ShoppingList(){
         const uniqueId = uuid()        
 
         let shopping={
-            id : uuid(),
+            // id : uuid(),
             product,
             quantity,
         }
@@ -43,7 +43,7 @@ function ShoppingList(){
 
     //local storage
     useEffect(()=>{
-        localStorage.setItem('shopping_list1', JSON.stringify(shoppingList));
+        localStorage.setItem('shoppingListLocal', JSON.stringify(shoppingList));
     },[shoppingList])
 
     const refresh = () => {
@@ -51,7 +51,7 @@ function ShoppingList(){
             .then(res => res.json())
             .then(data => {
                 window.localStorage.setItem('clientID', JSON.stringify(data.id));
-                window.localStorage.setItem('teachersAPI',JSON.stringify(data.courses));
+                window.localStorage.setItem('shoppingListAPI',JSON.stringify(data.courses));
                 window.localStorage.setItem('sequence', JSON.stringify(data.sequence));
                 
             });
@@ -59,8 +59,27 @@ function ShoppingList(){
     
         
 
-    const getTeacherAPI = async () => {
+    const sendChanges = async () => {
+        const onlineShoppingList = localStorage.getItem('shoppingListAPI');
+        const localShoppingList = localStorage.getItem('shoppingListLocal');
 
+        for(var i=0; i<onlineShoppingList.length; i++){
+            for(var j=0; j<localShoppingList.length; j++){
+                if(onlineShoppingList[i].product == localShoppingList[j].product){
+                    onlineShoppingList[i].quantity = localShoppingList[j].quantity;
+                    
+                    // fetch("https://esilv.olfsoftware.fr/td5/register", {
+                    //     method: 'POST',
+                    //     headers: {
+                    //         'Content-Type' : 'application/x-www-form-urlencoded'
+                    //     },
+                    //     body: JSON.stringify({
+
+                    //     })
+                    // })
+                }
+            }
+        }
     }
 
     const post = async () => {
