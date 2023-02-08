@@ -20,6 +20,8 @@ function ShoppingList(){
     //array of shopping list
     const[shoppingList, setShoppingList] = useState(getDataFromLocalStorage());
 
+    const[apiShoppingList, setApiShoppingList] = useState()
+
     //input fields
     const [product, setProduct] = useState('');
     const [quantity, setQuantity] = useState('');
@@ -43,6 +45,27 @@ function ShoppingList(){
     useEffect(()=>{
         localStorage.setItem('shopping_list1', JSON.stringify(shoppingList));
     },[shoppingList])
+
+    const refresh = () => {
+        fetch("https://esilv.olfsoftware.fr/td5/register")
+            .then(res => res.json())
+            .then(data => {
+                window.localStorage.setItem('clientID', JSON.stringify(data.id));
+                window.localStorage.setItem('teachersAPI',JSON.stringify(data.courses));
+                window.localStorage.setItem('sequence', JSON.stringify(data.sequence));
+                
+            });
+    }
+    
+        
+
+    const getTeacherAPI = async () => {
+
+    }
+
+    const post = async () => {
+
+    }
 
     return (
         <div>
@@ -79,6 +102,10 @@ function ShoppingList(){
                         </div> 
                     }
                     {shoppingList.length < 1 && <div>No products in shopping list</div>}
+                </div>
+                <div>
+                    <button onClick={refresh}>Refresh</button>
+                    {apiShoppingList}
                 </div>
             </div>
         </div>
