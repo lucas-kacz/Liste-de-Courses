@@ -59,28 +59,45 @@ function ShoppingList(){
     
         
 
-    const sendChanges = async () => {
-        const onlineShoppingList = localStorage.getItem('shoppingListAPI');
-        const localShoppingList = localStorage.getItem('shoppingListLocal');
+const sendChanges = async () => {
+    const onlineShoppingList = JSON.parse(localStorage.getItem('shoppingListAPI'));
+    const localShoppingList = JSON.parse(localStorage.getItem('shoppingListLocal'));
 
-        for(var i=0; i<onlineShoppingList.length; i++){
-            for(var j=0; j<localShoppingList.length; j++){
-                if(onlineShoppingList[i].product == localShoppingList[j].product){
-                    onlineShoppingList[i].quantity = localShoppingList[j].quantity;
-                    
-                    // fetch("https://esilv.olfsoftware.fr/td5/register", {
-                    //     method: 'POST',
-                    //     headers: {
-                    //         'Content-Type' : 'application/x-www-form-urlencoded'
-                    //     },
-                    //     body: JSON.stringify({
-
-                    //     })
-                    // })
-                }
+    for(var i=0; i<onlineShoppingList.length; i++){
+        for(var j=0; j<localShoppingList.length; j++){
+            if(onlineShoppingList[i].product === localShoppingList[j].product){
+                onlineShoppingList[i].quantity = localShoppingList[j].quantity;
             }
         }
     }
+
+    console.log(typeof(localStorage.getItem('clientID')))
+    console.log('id='+localStorage.getItem('clientID').replaceAll('"','')+'&chg='+JSON.stringify(onlineShoppingList))
+
+    fetch('https://esilv.olfsoftware.fr/td5/courses',{
+		method: 'POST',
+		headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+		body: 'id='+localStorage.getItem('clientID').replaceAll('"','')+'&chg='+JSON.stringify(onlineShoppingList)
+	}).then((reponse) => {
+        // console.log(reponse);
+        if (reponse.ok) {
+            reponse.json().then((json) => {
+                console.log(json);
+			})
+        }
+    });
+}
+    // fetch("https://esilv.olfsoftware.fr/td5/register", {
+    //     method: 'POST',
+    //     headers: {'Content-Type' : 'application/x-www-form-urlencoded'}
+    // }).then((response) =>{
+    //         body: JSON.stringify({
+
+    //         }
+    //     }
+    // }
+
+
 
     const post = async () => {
 
@@ -125,6 +142,7 @@ function ShoppingList(){
                 <div>
                     <button onClick={refresh}>Refresh</button>
                     {apiShoppingList}
+                    <button onClick={sendChanges}>Update</button>
                 </div>
             </div>
         </div>
