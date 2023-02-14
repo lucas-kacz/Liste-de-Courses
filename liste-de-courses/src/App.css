@@ -3,18 +3,58 @@ body{
     padding: 0;
     background-image: linear-gradient( 135deg, #6B73FF 10%, #000DFF 100%);
     background-attachment: fixed;
+    /* overflow: hidden; */
 }
 
 .background{
+    /* width: 100%;
+    height: 100vh; */
+    width: 100%;
+    height: 100vh;
+    margin-right: auto;
+    margin-left: auto;
+}
+
+.main{
+    /* text-align: center;
     display: table;
+    overflow: hidden;
     background-color: white;
     border-radius: 10px;
     max-width: 100%;
     width: 500px;
-    height: 200px;
     margin-left: auto;
     margin-right: auto;
-    margin-top: 10em;
+    height: 80vh;
+    margin-top: 10vh; */
+    /* padding: 1em; */
+    margin: 0 auto;
+    width: 500px;
+    max-width: 100vw;
+    height: 80vh;
+    overflow-y: scroll;
+    position: relative;
+    top: 50%;
+    transform: translateY(-50%);
+    text-align: center;
+    border: 0.01em solid white;
+    border-radius: 1em;
+    background-color: white;
+    scrollbar-width: none;
+}
+
+.main::-webkit-scrollbar{
+    width: 0;
+}
+
+.scroll{
+    overflow-y: visible;
+    min-height: fit-content;
+}
+
+form{
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .background .liste-de-courses{
@@ -29,11 +69,51 @@ body{
     padding: 20px;
     margin-left: auto;
     margin-right: auto;
+    text-align: center;
     table-layout: auto;
-    width: 300px;
+    width: calc(100%-40px);
     border-collapse: collapse;
+}
+
+.list-table table{
+    border-collapse: collapse;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .list-table th, td{
     border: 1px solid;
 }
+
+button{
+    padding: 5px;
+    
+}
+
+.split{
+    display: grid;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.split2{
+    display: flex;
+    flex-wrap: wrap;
+    margin-bottom: 1em;
+}
+
+button{
+    background-color: darkslateblue; 
+    border-radius: 29px; 
+    border: none; 
+    color: white; 
+    font-size: 15px; 
+    padding: 10px 45px; 
+    cursor: pointer; 
+    transition: 0.3s; 
+  }
+  
+  button:hover{
+    background-color: slateblue; 
+    transition: 0.3s; 
+  }

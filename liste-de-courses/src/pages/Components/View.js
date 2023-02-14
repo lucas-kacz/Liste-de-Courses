@@ -1,14 +1,15 @@
 import React from "react";
 
 
-export const View = ({shoppingList}) => {
-    return shoppingList.map((shopping, i)=>(
-        <tr key={i}>
-            <td>{shopping.product}</td>
-            <td>{shopping.quantity}</td>
-            {/* <td className="delete">
-                <button onClick={()=>deleteProduct()}>Delete</button>
-            </td> */}
+export const View = ({shoppingList, deleteItem}) => {
+
+    return shoppingList.map((shopping, index)=>(
+        <tr key={index}>
+            <td>{shopping.produit}</td>
+            <td>{shopping.qte}</td>
+            <td className="delete">
+                <button onClick={()=>deleteItem(shopping.produit)}>Delete</button>
+            </td>
         </tr>
     ))
 }

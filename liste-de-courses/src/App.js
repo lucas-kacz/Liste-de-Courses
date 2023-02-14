@@ -7,11 +7,12 @@ import ShoppingList from './pages/ShopList';
 function App() {
   return (
     <>
-      <Routes>
+      {/* <Routes>
         <Route path="/" element={<LoginPage/>}/>
         <Route path="/shoplist" element={<ShopList/>}/>
         <Route path="/shoppinglist" element={<ShoppingList/>}/>
-      </Routes>
+      </Routes> */}
+      <ShoppingList/>
     </>
   );
 }

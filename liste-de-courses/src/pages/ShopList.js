@@ -15,30 +15,66 @@ const getDataFromLocalStorage=()=>{
     }
 }
 
+
 function ShoppingList(){
 
     //array of shopping list
     const[shoppingList, setShoppingList] = useState(getDataFromLocalStorage());
 
-    const[apiShoppingList, setApiShoppingList] = useState()
+    const[apiShoppingList, setApiShoppingList] = useState([]);
+
+    const[myAPIURL, setMyAPIURL] = useState({
+        myRegister : 'https://lucaskaczmarski.esilv.olfsoftware.fr/Liste_de_Courses/register.php',
+        myCourses : 'https://lucaskaczmarski.esilv.olfsoftware.fr/Liste_de_Courses/courses.php',
+    });
+
+    const[teacherAPIURL, setTeacherURL] = useState({
+        teacherRegister : 'https://esilv.olfsoftware.fr/td5/register',
+        teacherCourses : 'https://esilv.olfsoftware.fr/td5/courses',
+    });
+
+    const[activeRegister, setActiveRegister] = useState('')
+    const[activeCourses, setActiveCourses] = useState('')
 
     //input fields
-    const [product, setProduct] = useState('');
-    const [quantity, setQuantity] = useState('');
+    const [produit, setproduit] = useState('');
+    const [qte, setqte] = useState('');
 
     //form submit event
     const handleAddToShoppingList=(e)=>{
         e.preventDefault();
         //creating a shopping object
-        const uniqueId = uuid()        
+        // const uniqueId = uuid()        
 
         let shopping={
-            // id : uuid(),
-            product,
-            quantity,
+            produit,
+            qte,
         }
+
+        // if (produit && qte) {
+        //     let exists = false;
+        //     let updatedList = shoppingList.map(item => {
+        //         if (item.produit === produit) {
+        //             exists = true;
+        //             return {
+        //                 produit: produit,
+        //                 qte: parseInt(item.qte) + parseInt(qte)
+        //             };
+        //         }
+        //         return item;
+        //     });
+        //     console.log(updatedList)
+
+        //     if (!exists) {
+        //         updatedList.push({ produit: produit, qte: qte });
+        //     }
+
+        //     setShoppingList(updatedList);
+        //     setproduit("");
+        //     setqte("");
+        // }
+
         setShoppingList([...shoppingList, shopping]);
-        console.log(uuid())
     }
 
     //local storage
@@ -46,103 +82,201 @@ function ShoppingList(){
         localStorage.setItem('shoppingListLocal', JSON.stringify(shoppingList));
     },[shoppingList])
 
+    //display online shopping list
+    // useEffect(()=>{
+    //     if(activeRegister !== ''){
+    //         if (JSON.parse(localStorage.getItem('shoppingListApi')) !== apiShoppingList){
+    //             getListedeCourses()
+    //         }
+    //         else{
+    //             return 0
+    //         }
+    //     }
+    // }, [])
+
+
+    function myAPI(){
+        setActiveRegister(myAPIURL.myRegister)
+        setActiveCourses(myAPIURL.myCourses)
+    }
+
+    function teacherAPI(){
+        setActiveRegister(teacherAPIURL.teacherRegister)
+        setActiveCourses(teacherAPIURL.teacherCourses)
+    }
+
     const refresh = () => {
-        fetch("https://esilv.olfsoftware.fr/td5/register")
+        fetch(activeRegister)
             .then(res => res.json())
             .then(data => {
                 window.localStorage.setItem('clientID', JSON.stringify(data.id));
                 window.localStorage.setItem('shoppingListAPI',JSON.stringify(data.courses));
                 window.localStorage.setItem('sequence', JSON.stringify(data.sequence));
                 
-            });
+            })
+
+            // .then(function(data)){
+            //     let placeholder = document.querySelector("#data-output");
+
+            // }
+    }
+
+    const deleteItem=(produit)=>{
+        const filteredList=shoppingList.filter((element, index)=>{
+            return element.produit !== produit
+        })
+        setShoppingList(filteredList)
     }
     
+    const getListedeCourses = async () => {
+        if(activeRegister !== ''){
+            fetch(activeRegister)
+                .then(res => res.json())
+                .then(data => {
+                    console.log(data.courses)
+                    setApiShoppingList(data.courses.map(({produit, qte}) => {
+                        return(
+                            <tr>
+                                <td>{produit}</td>
+                                <td>{qte}</td>
+                            </tr>
+                        )
+                    }))
+                })
+        }
+    }
         
 
-const sendChanges = async () => {
-    const onlineShoppingList = JSON.parse(localStorage.getItem('shoppingListAPI'));
-    const localShoppingList = JSON.parse(localStorage.getItem('shoppingListLocal'));
+    const sendChanges = async () => {
+        const onlineShoppingList = JSON.parse(localStorage.getItem('shoppingListAPI'))
+        const localShoppingList = JSON.parse(localStorage.getItem('shoppingListLocal'))
 
-    for(var i=0; i<onlineShoppingList.length; i++){
-        for(var j=0; j<localShoppingList.length; j++){
-            if(onlineShoppingList[i].product === localShoppingList[j].product){
-                onlineShoppingList[i].quantity = localShoppingList[j].quantity;
+        console.log(onlineShoppingList)
+        console.log(localShoppingList)
+
+        for(var i=0; i<onlineShoppingList.length; i++){
+            for(var j=0; j<localShoppingList.length; j++){
+                if(onlineShoppingList[i].produit === localShoppingList[j].produit){
+                    var quantity = 0;
+                    for(var k =0; k<localShoppingList.length; k++){
+                        if(onlineShoppingList[i].produit === localShoppingList[k].produit){
+                            console.log(localShoppingList[k].produit)
+                            quantity += parseInt(localShoppingList[k].qte)
+                            // console.log(quantity)
+                            // localShoppingList.splice(k,1)
+                        }
+                    }
+
+                    console.log(quantity)
+                    console.log(parseInt(onlineShoppingList[i].qte))
+                    const change = quantity-parseInt(onlineShoppingList[i].qte)
+                    onlineShoppingList[i].qte=change.toString()
+                    localShoppingList.splice(j,1)
+                }
             }
         }
-    }
 
-    console.log(typeof(localStorage.getItem('clientID')))
-    console.log('id='+localStorage.getItem('clientID').replaceAll('"','')+'&chg='+JSON.stringify(onlineShoppingList))
-
-    fetch('https://esilv.olfsoftware.fr/td5/courses',{
-		method: 'POST',
-		headers: {'Content-Type': 'application/x-www-form-urlencoded'},
-		body: 'id='+localStorage.getItem('clientID').replaceAll('"','')+'&chg='+JSON.stringify(onlineShoppingList)
-	}).then((reponse) => {
-        // console.log(reponse);
-        if (reponse.ok) {
-            reponse.json().then((json) => {
-                console.log(json);
-			})
+        if(localShoppingList.length > 0){
+            for(var l=0; l<localShoppingList.length; l++)
+            {
+                console.log(localShoppingList[l])
+                onlineShoppingList.push(localShoppingList[l])
+            }   
         }
-    });
-}
-    // fetch("https://esilv.olfsoftware.fr/td5/register", {
-    //     method: 'POST',
-    //     headers: {'Content-Type' : 'application/x-www-form-urlencoded'}
-    // }).then((response) =>{
-    //         body: JSON.stringify({
+        
 
-    //         }
-    //     }
-    // }
+        // console.log(typeof(localStorage.getItem('clientID')))
+        console.log('id='+localStorage.getItem('clientID').replaceAll('"','')+'&chg='+JSON.stringify(localShoppingList))
 
-
-
-    const post = async () => {
-
+        fetch(activeCourses ,{
+            method: 'POST',
+            headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+            body: 'id='+localStorage.getItem('clientID').replaceAll('"','')+'&chg='+JSON.stringify(onlineShoppingList)
+        }).then((reponse) => {
+            // console.log(reponse);
+            if (reponse.ok) {
+                reponse.text().then((json) => {
+                    console.log(json);
+                })
+            }
+        });
     }
+
 
     return (
-        <div>
-            <h1>Shopping List App</h1>
+        <div className="background">
 
             <div className="main">
-                <div className="shopping-form">
-                    <form onSubmit={handleAddToShoppingList}>
-                        <label>Product</label>
-                        <input type="text" required onChange={(e)=>setProduct(e.target.value)} value={product}></input>
-                        <br/>
-                        <label>Quantity</label>
-                        <input type="number" required onChange={(e)=>setQuantity(e.target.value)} value={quantity}></input>
-                        <br/>
-                        <button type="submit">Add to Shopping List</button>
-                    </form>
-                </div>
+                <div className="scroll">
+                    <h1>Shopping List App</h1>
+                    
+                    <button onClick={myAPI}>My Api</button>                    
+                    <button onClick={teacherAPI}>Teacher Api</button>
+                    <br/>
 
-                <div className="table">
-                    {shoppingList.length > 0 &&
-                        <div>
-                            <table>
-                                <thead>
-                                    <tr>
-                                        <th>Id</th>
-                                        <th>Product</th>
-                                        <th>Quantity</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <View shoppingList={shoppingList}/>
-                                </tbody>
-                            </table>
-                        </div> 
-                    }
-                    {shoppingList.length < 1 && <div>No products in shopping list</div>}
-                </div>
-                <div>
-                    <button onClick={refresh}>Refresh</button>
-                    {apiShoppingList}
-                    <button onClick={sendChanges}>Update</button>
+
+                    <div className="shopping-form">
+                        <form onSubmit={handleAddToShoppingList}>
+                            <div className="split2">
+                                <div className="split">
+                                    <label>Produit</label><br/>
+                                    <input type="text" required onChange={(e)=>setproduit(e.target.value)} value={produit}></input>
+                                </div>
+                                <div className="split">
+                                    <label>Quantité</label><br/>
+                                    <input type="number" required onChange={(e)=>setqte(e.target.value)} value={qte}></input>
+                                </div>
+                            </div>
+                            
+                            <button type="submit">Add to Shopping List</button>
+                        </form>
+                    </div>
+
+                    <div className="list-table">
+                        <h3>Local ShoppingList</h3>
+                        {shoppingList.length > 0 &&
+                            <div>
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th>Produit</th>
+                                            <th>Quantité</th>
+                                            <th>Supprimer</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <View shoppingList={shoppingList} deleteItem={deleteItem}/>
+                                    </tbody>
+                                </table>
+
+                            </div> 
+                        }
+                        {shoppingList.length < 1 && <div>No produits in shopping list</div>}
+
+
+                    </div>
+
+                    <div className="list-table">
+                        <h3>Online Shopping List</h3>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Produit</th>
+                                    <th>Quantité</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {apiShoppingList}
+                            </tbody>
+                        </table>    
+                    </div>
+
+
+                    <div>
+                        <button onClick={refresh}>Refresh</button>
+                        <button onClick={sendChanges}>Update</button>
+                        <button onClick={getListedeCourses}>Récupérer Liste</button>
+                    </div>
                 </div>
             </div>
         </div>
